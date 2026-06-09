@@ -6,31 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Predictor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
         :root {
             --accent-color: #007bff;
             --accent-glow: rgba(0, 123, 255, 0.4);
             --hover-border: rgba(0, 123, 255, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --surface-color: #ffffff;
+            --text-main: #1e293b;
         }
 
         [data-bs-theme="dark"] {
             --accent-color: #00bedd;
-            /* Slightly reduced brightness/saturation from #00d2ff */
-            --accent-glow: rgba(0, 190, 221, 0.35);
-            /* Reduced from 0.4 */
+            --accent-glow: rgba(0, 190, 221, 0.3);
             --hover-border: rgba(0, 190, 221, 0.5);
-            /* Reduced from 0.6 */
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --surface-color: #0f172a;
+            --text-main: #f8fafc;
+            --bs-body-bg: #0b0f19;
         }
 
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--bs-body-bg);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .outfit-font {
+            font-family: 'Outfit', sans-serif;
         }
 
         #particles-canvas {
@@ -41,10 +60,97 @@
             height: 100vh;
             z-index: -1;
             pointer-events: none;
+            opacity: 0.6;
         }
 
+        /* --- NEW: Premium Navbar --- */
+        .navbar-custom {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            margin: 0 40px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 14px 30px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .navbar-brand-custom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: #fff !important;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-brand-custom .hero-logo {
+            width: 38px;
+            height: 38px;
+        }
+
+        .nav-link-custom {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-link-custom:hover {
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            border: none;
+            color: white !important;
+            font-weight: 600;
+            padding: 10px 26px;
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 16px rgba(102, 16, 242, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 24px rgba(102, 16, 242, 0.35);
+            filter: brightness(1.15);
+        }
+
+        .btn-news {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-news:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* --- Hero Section Refinement --- */
         .hero-section {
-            padding: 70px 0 30px;
+            padding: 100px 0 60px;
             text-align: center;
             position: relative;
         }
@@ -54,18 +160,15 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            /* Spacing between logo and title */
             margin-bottom: 20px;
         }
 
         .hero-logo {
             width: 90px;
             height: 90px;
-            /* Main float animation for the entire SVG */
             animation: floatMain 5s ease-in-out infinite;
         }
 
-        /* Independent animations for the inner SVG components */
         @keyframes floatMain {
 
             0%,
@@ -110,8 +213,6 @@
             to {
                 stroke-dashoffset: -200;
             }
-
-            /* Matches dasharray sum for a seamless infinite loop */
         }
 
         #candle-green {
@@ -133,16 +234,30 @@
         }
 
         .site-title {
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
             margin-bottom: 0;
-            line-height: 1;
+            line-height: 1.1;
             font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(90deg, currentColor, var(--accent-color));
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--text-main), var(--accent-color) 70%, #6610f2);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px var(--accent-glow);
+            text-shadow: none;
+        }
+
+        .title-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(0, 190, 221, 0.1);
+            border: 1px solid rgba(0, 190, 221, 0.2);
+            border-radius: 50px;
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .footer-brand {
@@ -180,40 +295,47 @@
         }
 
         .portal-card {
-            border-radius: 16px;
-            padding: 35px 25px;
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 24px;
+            padding: 40px 30px;
             text-align: center;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .portal-card::before {
+        .portal-card::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            inset: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg, var(--glass-border), transparent 50%, var(--glass-border));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
         }
 
         .portal-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--hover-border) !important;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 0 20px var(--accent-glow);
+            transform: translateY(-12px) scale(1.02);
+            border-color: rgba(0, 190, 221, 0.3) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px var(--accent-glow);
+            background: rgba(255, 255, 255, 0.08) !important;
         }
 
         [data-bs-theme="dark"] .portal-card:hover {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-glow);
+            background: rgba(255, 255, 255, 0.03) !important;
         }
 
         .portal-card:hover::before {
@@ -699,21 +821,183 @@
         [data-bs-theme="dark"] .chart-img {
             filter: invert(0.9) hue-rotate(180deg);
         }
+
+        /* ── TradingView Live Chart Section ── */
+        .tv-chart-section {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--bs-border-color);
+            background: var(--bs-body-bg);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 40px;
+        }
+
+        [data-bs-theme="dark"] .tv-chart-section {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 0 30px var(--accent-glow);
+        }
+
+        .tv-chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--bs-border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tv-chart-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--bs-body-color);
+        }
+
+        .tv-live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(40, 167, 69, 0.12);
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            border-radius: 30px;
+            padding: 3px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #28a745;
+            letter-spacing: 0.5px;
+        }
+
+        .tv-live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.6);
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.9;
+                box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+            }
+        }
+
+        .tv-timeframe-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tv-tf-btn {
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--bs-border-color);
+            background: var(--bs-body-bg);
+            color: var(--bs-secondary-color);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tv-tf-btn:hover,
+        .tv-tf-btn.active {
+            background: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+            box-shadow: 0 2px 10px var(--accent-glow);
+        }
+
+        .tv-chart-body {
+            height: 650px;
+            position: relative;
+        }
+
+        .tv-chart-body iframe,
+        .tv-chart-body>div {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .tv-chart-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: var(--bs-body-bg);
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        .tv-chart-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .tv-open-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            text-decoration: none;
+            padding: 5px 14px;
+            border: 1px solid var(--accent-color);
+            border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .tv-open-link:hover {
+            background: var(--accent-color);
+            color: #fff;
+        }
     </style>
 </head>
 
 <body>
-    <div class="top-nav-controls">
-        <button class="nav-btn btn-news" id="news-btn" data-bs-toggle="modal" data-bs-target="#newsModal"
-            onclick="fetchFinanceNews()">
-            <span class="news-indicator" id="news-indicator"></span>
-            News
-        </button>
-        <!-- Dynamic Login/User Button -->
-        <div id="auth-nav-area">
-            <a href="/login" class="nav-btn btn-login" id="login-nav-btn">Login</a>
+    <!-- Premium Frosted Navbar -->
+    <nav class="navbar-custom d-flex justify-content-between align-items-center">
+        <a href="/" class="navbar-brand-custom">
+            <div class="hero-logo-container" style="width: 35px; height: 35px;"></div>
+            <span>Predictor</span>
+        </a>
+
+        <div class="d-none d-lg-flex gap-2">
+            <a href="#" class="nav-link-custom">Dashboard</a>
+            <a href="#" class="nav-link-custom" data-bs-toggle="modal" data-bs-target="#aboutModal">About</a>
+            <a href="/careers" class="nav-link-custom" target="_blank">Careers</a>
+            <a href="#" class="nav-link-custom" data-bs-toggle="modal" data-bs-target="#newsModal"
+                onclick="fetchFinanceNews()">Market News</a>
         </div>
-    </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-news position-relative d-lg-none" data-bs-toggle="modal" data-bs-target="#newsModal"
+                onclick="fetchFinanceNews()" style="padding: 8px 12px; border-radius: 10px;">
+                <i class="bi bi-newspaper"></i>
+                <span class="news-indicator" id="news-indicator"></span>
+            </button>
+            <div id="auth-nav-area">
+                <a href="/login" class="btn btn-premium" id="login-nav-btn">Login</a>
+            </div>
+
+        </div>
+    </nav>
 
     <canvas id="particles-canvas"></canvas>
 
@@ -781,22 +1065,29 @@
                     stroke-width="14" stroke-linecap="round" />
             </g>
         </svg>
-
-        <h1 class="site-title text-body">Predictor</h1>
     </template>
 
     <div class="hero-section">
-        <div id="header-brand-container" class="hero-title-wrapper"></div>
-        <p class="site-subtitle">Your unified trading ecosystem. Access critical market tools, charts, and analysis
-            platforms efficiently from one centralized hub.</p>
+        <div class="container">
 
-        <form method="POST" action="/" class="search-form mx-auto mt-4" style="max-width: 550px;">
-            <div class="input-group">
-                <input type="text" name="stock" class="form-control form-control-lg bg-body border-secondary"
-                    placeholder="Search Stock/Crypto (e.g. RELIANCE, BTC-USD, INFOSYS)" required>
-                <button type="submit" class="btn btn-primary btn-lg px-4">AI Analyze 🔍</button>
+            <div class="hero-title-wrapper">
+                <div class="hero-logo-container"></div>
+                <h1 class="site-title">Predictor</h1>
             </div>
-        </form>
+            <p class="site-subtitle">The ultimate unified ecosystem for intelligent stock analysis, real-time crypto
+                signals, and professional-grade trading insights.</p>
+
+
+        </div>
+    </div>
+
+    <form method="POST" action="/" class="search-form mx-auto mt-4" style="max-width: 550px;">
+        <div class="input-group">
+            <input type="text" name="stock" class="form-control form-control-lg bg-body border-secondary"
+                placeholder="Search Stock/Crypto (e.g. RELIANCE, BTC-USD, INFOSYS)" required>
+            <button type="submit" class="btn btn-primary btn-lg px-4">AI Analyze</button>
+        </div>
+    </form>
     </div>
 
     <!-- Real-Time Ticker Section -->
@@ -874,52 +1165,70 @@
 
                 </div>
 
-                <!-- Right Side: News & Dataset -->
-                <div class="col-lg-4 col-12">
-                    <div class="analysis-card p-4 shadow-sm mb-4">
-                        <h5 class="fw-bold mb-4 border-bottom pb-2">Company Insights</h5>
 
-                        <div class="ticker-news-list">
-                            {% if ticker_news %}
-                            {% for news in ticker_news %}
-                            <div class="news-item-mini mb-3 pb-3 border-bottom last-border-none">
-                                <a href="{{ news.link }}" target="_blank" class="text-decoration-none">
-                                    <h6 class="fw-bold text-body small mb-1 line-clamp-2">{{ news.title }}</h6>
-                                </a>
-                                <div class="extra-small text-secondary fw-semibold">
-                                    {{ news.publisher }} • {{ news.provider_publish_time }}
-                                </div>
-                            </div>
-                            {% endfor %}
-                            {% else %}
-                            <div class="text-center py-4 opacity-50">
-                                <p class="small mb-0">No recent news found for this ticker.</p>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mt-4">
-                            <h6 class="fw-bold small mb-2">Technical Summary</h6>
-                            <div class="p-3 bg-body-tertiary rounded border small">
-                                <p class="mb-2"><strong>Market Cap:</strong> {{ market_cap }}</p>
-                                <p class="mb-0 text-secondary">Neural network suggests a <strong>{{ short_term_view
-                                        }}</strong> bias for the upcoming sessions based on recent volatility patterns.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 pt-4 border-top">
-                            <a href="/Static/{{ dataset_link }}" class="btn btn-outline-primary btn-sm w-100 fw-bold"
-                                download>
-                                📊 DOWNLOAD HISTORICAL DATA (.CSV)
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
             </div>
         </div>
-        {% endif %}
+
+        <!-- ═══════════════════════════════════════════════
+             TRADINGVIEW LIVE CHART
+        ═══════════════════════════════════════════════ -->
+        <div class="tv-chart-section mt-2">
+            <div class="tv-chart-header">
+                <div class="tv-chart-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)"
+                        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                    Live Chart &mdash;
+                    <span style="color:var(--accent-color);">{{ stock_symbol }}</span>
+                    <span class="tv-live-pill">
+                        <span class="tv-live-dot"></span>LIVE
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <!-- Quick Timeframe Tabs -->
+                    <div class="tv-timeframe-tabs" id="tv-tf-tabs">
+                        <button class="tv-tf-btn" data-interval="1" title="1 minute">1m</button>
+                        <button class="tv-tf-btn" data-interval="5" title="5 minutes">5m</button>
+                        <button class="tv-tf-btn" data-interval="15" title="15 minutes">15m</button>
+                        <button class="tv-tf-btn" data-interval="60" title="1 hour">1H</button>
+                        <button class="tv-tf-btn active" data-interval="D" title="1 day">1D</button>
+                        <button class="tv-tf-btn" data-interval="W" title="1 week">1W</button>
+                        <button class="tv-tf-btn" data-interval="M" title="1 month">1M</button>
+                    </div>
+                    <!-- Open on TradingView -->
+                    <a href="https://in.tradingview.com/chart/?symbol={{ tv_symbol }}" target="_blank"
+                        class="tv-open-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                        Open Full Chart
+                    </a>
+                </div>
+            </div>
+
+            <!-- Chart Body -->
+            <div class="tv-chart-body" id="tv-chart-body">
+                <!-- Loading placeholder -->
+                <div class="tv-chart-loading" id="tv-chart-loading">
+                    <div class="spinner-border" style="color:var(--accent-color);width:3rem;height:3rem;" role="status">
+                    </div>
+                    <div style="color:var(--bs-secondary-color);font-size:0.9rem;font-weight:600;">Loading Live
+                        Chart&hellip;</div>
+                </div>
+                <!-- TradingView widget container (filled by JS) -->
+                <div id="tv-advanced-chart-container" style="height:100%;"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             AI PREDICTION CHARTS (EMA + Neural Network)
+        ═══════════════════════════════════════════════ -->
+    </div>
+    {% endif %}
     </div>
 
     <div class="container-fluid">
@@ -1104,6 +1413,8 @@
             </a>
         </div>
 
+
+
     </div>
 
     <!-- Trading Strategy Section (Moved out of portal grid wrapper but before footer for guaranteed flow) -->
@@ -1111,88 +1422,57 @@
         <h2 class="text-center mb-4 fw-bold" style="color: var(--bs-body-color);">Trading Strategy & Rules</h2>
         <div class="row pt-0 g-4" style="max-width: 1200px; margin: 0 auto;">
             <!-- 1st: Stocks Trading -->
-            <div class="col-md-4">
+            <div class="col-lg-3 col-md-6">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#stocksModal"
                     class="portal-card card bg-body-tertiary border text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center py-4 w-100"
                     style="border: 2px solid var(--accent-color) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;">
-                    <h3 class="portal-title text-primary text-center mb-0">Stocks Trading</h3>
+                    <h3 class="portal-title text-primary text-center mb-0">Stocks</h3>
                     <p class="portal-desc text-center mt-2">View Rules & Strategy</p>
                 </button>
             </div>
 
             <!-- 2nd: Future & Option Trading -->
-            <div class="col-md-4">
+            <div class="col-lg-3 col-md-6">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#fnoModal"
                     class="portal-card card bg-body-tertiary border text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center py-4 w-100"
                     style="border: 2px solid var(--accent-color) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;">
-                    <h3 class="portal-title text-primary text-center mb-0">Future & Option</h3>
+                    <h3 class="portal-title text-primary text-center mb-0">F&O</h3>
                     <p class="portal-desc text-center mt-2">View Rules & Strategy</p>
                 </button>
             </div>
 
             <!-- 3rd: Crypto & Forex Trading -->
-            <div class="col-md-4">
+            <div class="col-lg-3 col-md-6">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#cryptoModal"
                     class="portal-card card bg-body-tertiary border text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center py-4 w-100"
                     style="border: 2px solid var(--accent-color) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;">
-                    <h3 class="portal-title text-primary text-center mb-0">Crypto & Forex</h3>
+                    <h3 class="portal-title text-primary text-center mb-0">Crypto/Forex</h3>
                     <p class="portal-desc text-center mt-2">View Rules & Strategy</p>
+                </button>
+            </div>
+
+            <!-- 4th: XAUUSD Gold Trading -->
+            <div class="col-lg-3 col-md-6">
+                <button type="button" data-bs-toggle="modal" data-bs-target="#goldModal"
+                    class="portal-card card bg-body-tertiary border text-decoration-none h-100 d-flex flex-column align-items-center justify-content-center py-4 w-100"
+                    style="border: 2px solid #ffd700 !important; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1); cursor: pointer; background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(218, 165, 32, 0.02));">
+                    <h3 class="portal-title text-center mb-0" style="color: #ffd700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">XAUUSD Gold</h3>
+                    <p class="portal-desc text-center mt-2">View AI Analysis</p>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- About Us & Vision Section (Visible on Main Page) -->
-    <div class="container-fluid py-5"
-        style="background: rgba(var(--bs-tertiary-bg-rgb), 0.2); border-top: 1px solid var(--bs-border-color);">
-        <div class="container-fluid" style="max-width: 1250px;">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6">
-                    <h2 class="fw-bold mb-4" style="color: var(--bs-body-color);">Predictor – <span
-                            class="text-primary">Your Unified Trading Ecosystem</span></h2>
-                    <p class="text-secondary lead">Predictor is a modern, all-in-one trading platform designed to
-                        simplify the way traders and investors access market tools, insights, and opportunities.</p>
-                    <p class="text-secondary">Our mission is to bring everything you need for smarter trading into one
-                        centralized and easy-to-use platform. We aim to empower traders of all levels by combining
-                        advanced technology, real-time data, and intelligent insights.</p>
 
-                    <div class="row mt-4 g-3">
-                        <div class="col-sm-6">
-                            <div class="p-3 border rounded bg-body">
-                                <h6 class="fw-bold text-primary mb-2">Advanced Tools</h6>
-                                <p class="small text-muted mb-0">Charting, Screening & Analysis</p>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="p-3 border rounded bg-body">
-                                <h6 class="fw-bold text-primary mb-2">AI Insights</h6>
-                                <p class="small text-muted mb-0">Sentiment & Market Predictor</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="p-4 rounded border bg-body shadow-sm">
-                        <h5 class="fw-bold mb-3">Our Core Offerings</h5>
-                        <ul class="text-secondary mb-0">
-                            <li class="mb-2"><strong>Market Integration:</strong> One hub for stocks, crypto, and forex.
-                            </li>
-                            <li class="mb-2"><strong>Strategy Building:</strong> Professional backtesting and rules.
-                            </li>
-                            <li class="mb-2"><strong>Smart Insights:</strong> AI-powered news analysis and signals.</li>
-                            <li><strong>Unified Experience:</strong> Stop switching between 10+ websites.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Footer -->
     <footer class="footer">
         <div class="container" style="max-width: 1250px; padding: 0 20px;">
             <div class="row mb-2">
                 <div class="col-md-4 mb-4 mb-md-0">
-                    <div id="footer-brand-container" class="footer-brand d-flex align-items-center mb-0 mt-0"></div>
+                    <div class="footer-brand d-flex align-items-center mb-0 mt-0">
+                        <div class="hero-logo-container" style="width: 45px; height: 45px;"></div>
+                        <h1 class="site-title">Predictor</h1>
+                    </div>
                     <h6 class="fw-bold mb-3 mt-3 text-white">Company</h6>
                     <ul class="footer-list list-unstyled" style="padding-left: 0;">
                         <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#aboutModal"
@@ -1203,7 +1483,7 @@
                         <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal"
                                 class="footer-link text-decoration-none" style="color: #a0a8b1;">Privacy & Cookies
                                 Policy</a></li>
-                        <li class="mb-2"><a href="#" class="footer-link text-decoration-none"
+                        <li class="mb-2"><a href="/careers" target="_blank" class="footer-link text-decoration-none"
                                 style="color: #a0a8b1;">Careers</a></li>
                     </ul>
                 </div>
@@ -1249,137 +1529,938 @@
 
     <!-- Strategy Modals -->
     <!-- Stocks Modal -->
+    <!-- ══════════════════════════════════════════════════════
+         STOCKS TRADING — Advanced Strategy Modal
+    ══════════════════════════════════════════════════════ -->
     <div class="modal fade" id="stocksModal" tabindex="-1" aria-labelledby="stocksModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-4" id="stocksModalLabel">Stocks Trading Rules & Strategy</h1>
+            <div class="modal-content" style="background:var(--bs-body-bg);border:1px solid var(--bs-border-color);">
+                <div class="modal-header"
+                    style="background:linear-gradient(135deg,rgba(0,123,255,0.10),rgba(0,190,221,0.08));border-bottom:1px solid var(--bs-border-color);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div
+                            style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#007bff,#0056b3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="stocksModalLabel">📈 Stocks Trading — Advanced
+                                Rules &amp; Strategy</h5>
+                            <small class="text-secondary">Institutional-grade frameworks for equity markets</small>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4" style="min-height: 50vh;">
-                    <p class="text-secondary mb-4">Add your personal stock trading rules, logics, and strategies below.
-                    </p>
-                    <div class="p-3"
-                        style="background: var(--bs-tertiary-bg); border-radius: 12px; border: 1px dashed #ccc; min-height: 40vh; display:flex; align-items:center; justify-content:center;">
-                        <p class="text-muted text-center m-0">
-                            <em>[Add your personal Stocks rules here by editing the modal block in
-                                <code>index.html</code>]</em>
-                        </p>
+                <div class="modal-body p-4 p-md-5">
+
+                    <!-- Disclaimer -->
+                    <div class="p-3 rounded-3 mb-4"
+                        style="background:rgba(255,193,7,0.07);border-left:4px solid #ffc107;">
+                        <p class="small mb-0"><strong>⚠️ Educational Purpose Only:</strong> The strategies below are for
+                            learning and research. Always backtest before live trading. Markets involve significant
+                            risk.</p>
                     </div>
+
+                    <!-- SECTION 1: ENTRY RULES -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#007bff,#00bedd);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🎯 Entry Rules</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#007bff;">✅ Trend Confirmation</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Only trade in the direction of the primary trend (weekly chart)</li>
+                                    <li>Price must be above 50 EMA & 200 EMA for long trades</li>
+                                    <li>Use ADX &gt; 25 to confirm trend strength before entry</li>
+                                    <li>Wait for higher highs + higher lows structure (uptrend)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#007bff;">⏰ Timing &amp; Candle Setup</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Enter on daily close or first 15-min candle above breakout level</li>
+                                    <li>Look for strong bullish engulfing / hammer candles at support</li>
+                                    <li>Avoid entries in first 30 min of market open (high volatility)</li>
+                                    <li>Best entry window: 10:00 AM – 12:30 PM IST (trend established)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#007bff;">📊 Technical Confluence</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>RSI between 45–65 (momentum zone, not overbought)</li>
+                                    <li>MACD bullish crossover on daily timeframe</li>
+                                    <li>Volume spike ≥ 1.5× average on breakout candle</li>
+                                    <li>Price near key support / demand zone from higher timeframe</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#007bff;">🔍 Stock Selection Criteria</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Select stocks above Nifty 200 (strong sectoral tailwind)</li>
+                                    <li>Relative strength vs Nifty50 must be positive (RS &gt; 1)</li>
+                                    <li>Market cap ≥ ₹5,000 Cr for liquidity assurance</li>
+                                    <li>promoter holding &gt; 40%, FII/DII buying in last quarter</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: ADVANCED STRATEGIES -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#6610f2,#007bff);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🚀 Advanced Strategies</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">📊 Swing Trading (3–10 Days)</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Buy at EMA crossover (20 crosses above 50)</li>
+                                    <li>Target: previous swing high or 1:3 R:R</li>
+                                    <li>Use weekly support/resistance as key levels</li>
+                                    <li>Exit 50% at first target, trail rest with EMA20</li>
+                                    <li>Best in trending markets, avoid sideways action</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">💥 Breakout Strategy</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Enter on closing breakout above 52-week high</li>
+                                    <li>Volume must be ≥ 2× average on breakout day</li>
+                                    <li>Place SL just below the breakout candle's low</li>
+                                    <li>Target: measured move = height of consolidation base</li>
+                                    <li>Use Darvas Box method for base identification</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">🏦 Position Trading (Weeks–Months)
+                                </div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Use monthly chart for direction, weekly for entry</li>
+                                    <li>Enter after quarterly earnings beat + guidance upgrade</li>
+                                    <li>Trail stop with 40-week / 200-day moving average</li>
+                                    <li>Pyramid add on pullbacks to key EMAs</li>
+                                    <li>Hold as long as fundamentals + technicals align</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">⚡ Morning Gap Strategy</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Trade stocks gapping up &gt;2% on high pre-market volume</li>
+                                    <li>Wait for first 15-min candle to complete</li>
+                                    <li>Buy above first 15-min high if gap holds</li>
+                                    <li>SL: below first 15-min low</li>
+                                    <li>Target: Previous day high / weekly resistance</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">📐 CANSLIM Method</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li><strong>C</strong> – Current earnings growth &gt;25% YoY</li>
+                                    <li><strong>A</strong> – Annual earnings growth for 3+ years</li>
+                                    <li><strong>N</strong> – New product, CEO, or 52-week high</li>
+                                    <li><strong>S</strong> – Supply/demand (low float + high demand)</li>
+                                    <li><strong>L</strong> – Leader in its sector (RS rating &gt; 80)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">🔄 Mean Reversion</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Buy when RSI &lt; 30 (oversold) in uptrending stocks only</li>
+                                    <li>Price must be ≥ 20% below 52-week high but in uptrend</li>
+                                    <li>Bollinger Band lower touch = potential entry zone</li>
+                                    <li>Target: Return to mean (20-day SMA)</li>
+                                    <li>Tight SL: 2% below entry / below recent swing low</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: EXIT & RISK MANAGEMENT -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#dc3545,#ffc107);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🛡️ Exit Rules &amp; Risk Management</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border"
+                                style="background:rgba(220,53,69,0.06);border-color:rgba(220,53,69,0.2)!important;">
+                                <div class="fw-bold mb-2 text-danger">🚫 Stop Loss Rules</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Max risk per trade: <strong>1–2%</strong> of total capital</li>
+                                    <li>Hard SL: below key support / swing low</li>
+                                    <li>Trail SL with EMA20 once in 10%+ profit</li>
+                                    <li>Never move SL further away from entry — only trail it</li>
+                                    <li>Time-based SL: exit if trade hasn't moved in 5 days</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border"
+                                style="background:rgba(40,167,69,0.06);border-color:rgba(40,167,69,0.2)!important;">
+                                <div class="fw-bold mb-2 text-success">💰 Profit Booking Rules</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Book 30–50% at 1:2 R:R (first target)</li>
+                                    <li>Move SL to breakeven after first target hit</li>
+                                    <li>Let remaining position run with trailing stop</li>
+                                    <li>Exit fully if stock closes below EMA50 on daily</li>
+                                    <li>Do NOT hold through results unless strong thesis</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#ffc107;">⚖️ Position Sizing</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Formula: Position Size = (Capital × Risk%) ÷ (Entry − SL)</li>
+                                    <li>Max 10–15% capital in a single stock</li>
+                                    <li>Max 3–5 open positions at a time (beginners: 2)</li>
+                                    <li>Sector concentration: max 30% in same sector</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#ffc107;">🚦 Daily Loss Limit</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Daily max loss: &lt;3% of account → stop trading for the day</li>
+                                    <li>Weekly max loss: &lt;6% → reduce position size next week</li>
+                                    <li>Drawdown &gt;15% → go to paper trading for 2 weeks</li>
+                                    <li>Review all losers weekly to find pattern mistakes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 4: GOLDEN RULES -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#ffc107,#fd7e14);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🏆 The 10 Golden Rules</h5>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 1</div>
+                                <div class="text-secondary">Trade with the trend, not against it</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 2</div>
+                                <div class="text-secondary">Cut losses fast, let profits run</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 3</div>
+                                <div class="text-secondary">Never average down a losing trade</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 4</div>
+                                <div class="text-secondary">Volume confirms the move</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 5</div>
+                                <div class="text-secondary">Risk 1–2% max per trade</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 6</div>
+                                <div class="text-secondary">Plan the trade, trade the plan</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 7</div>
+                                <div class="text-secondary">No revenge trading after losses</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 rounded border text-center small"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold" style="color:#ffc107;">Rule 8</div>
+                                <div class="text-secondary">Market is always right — adapt</div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Got
+                        it — Start Trading Smarter!</button></div>
             </div>
         </div>
     </div>
 
-    <!-- FnO Modal -->
+    <!-- ══════════════════════════════════════════════════════
+         FUTURES & OPTIONS — Advanced Strategy Modal
+    ══════════════════════════════════════════════════════ -->
     <div class="modal fade" id="fnoModal" tabindex="-1" aria-labelledby="fnoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-4" id="fnoModalLabel">Future & Option Trading Rules & Strategy</h1>
+            <div class="modal-content" style="background:var(--bs-body-bg);border:1px solid var(--bs-border-color);">
+                <div class="modal-header"
+                    style="background:linear-gradient(135deg,rgba(220,53,69,0.10),rgba(255,193,7,0.08));border-bottom:1px solid var(--bs-border-color);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div
+                            style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#dc3545,#ffc107);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="fnoModalLabel">⚡ Futures &amp; Options — Advanced
+                                Rules &amp; Strategy</h5>
+                            <small class="text-secondary">Professional derivatives trading frameworks</small>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4" style="min-height: 50vh;">
-                    <p class="text-secondary mb-4">Add your personal F&O trading rules, logics, and strategies below.
-                    </p>
-                    <div class="p-3"
-                        style="background: var(--bs-tertiary-bg); border-radius: 12px; border: 1px dashed #ccc; min-height: 40vh; display:flex; align-items:center; justify-content:center;">
-                        <p class="text-muted text-center m-0">
-                            <em>[Add your personal F&O rules here by editing the modal block in
-                                <code>index.html</code>]</em>
-                        </p>
+                <div class="modal-body p-4 p-md-5">
+
+                    <div class="p-3 rounded-3 mb-4"
+                        style="background:rgba(220,53,69,0.07);border-left:4px solid #dc3545;">
+                        <p class="small mb-0"><strong class="text-danger">⚠️ High Risk Warning:</strong> Futures &amp;
+                            Options involve leverage and can result in losses exceeding your capital. Requires formal
+                            knowledge of Greeks, expiry dynamics, and margin management. Paper trade for at least 3
+                            months before going live.</p>
                     </div>
+
+                    <!-- SECTION 1: F&O BASICS & SETUP -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#dc3545,#ffc107);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🎯 F&amp;O Entry Framework</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#dc3545;">📌 Index Futures Rules (Nifty / Bank
+                                    Nifty)</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Trade only in direction of weekly trend (EMA 20 weekly)</li>
+                                    <li>Enter after 15-min opening range breakout is confirmed</li>
+                                    <li>Use PDH (Previous Day High) and PDL as key levels</li>
+                                    <li>Avoid entries between 9:15–9:30 AM IST (volatile opening)</li>
+                                    <li>Track global markets (SGX Nifty, Dow Futures) pre-market</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#dc3545;">📌 Options Buying Rules</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Buy options only when IV Rank &lt; 30 (cheap premiums)</li>
+                                    <li>Use ATM or 1 strike ITM options for directional trades</li>
+                                    <li>Never buy options expiring in &lt; 5 days (theta decay risk)</li>
+                                    <li>Delta between 0.40–0.60 for balanced premium &amp; movement</li>
+                                    <li>Risk only 2–3% of capital per options trade</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#dc3545;">📌 Options Selling Rules</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Sell options only when IV Rank &gt; 60 (expensive premiums)</li>
+                                    <li>Sell OTM options at least 1–2 strikes away from current price</li>
+                                    <li>Always hedge: use spreads (Bull Put, Bear Call, Iron Condor)</li>
+                                    <li>Target: 50% of premium collected → close and book profit</li>
+                                    <li>Exit immediately if option doubles against you (2× loss rule)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#dc3545;">📊 Greeks Cheat Sheet</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li><strong>Delta (Δ):</strong> Speed of option price change vs underlying</li>
+                                    <li><strong>Gamma (Γ):</strong> Rate of delta change — high near expiry</li>
+                                    <li><strong>Theta (Θ):</strong> Time decay — enemy for buyers, friend for sellers
+                                    </li>
+                                    <li><strong>Vega (V):</strong> Sensitivity to IV — buy before events, sell after
+                                    </li>
+                                    <li><strong>IV Crush:</strong> IV drops after events → options lose value sharply
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: ADVANCED F&O STRATEGIES -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#6610f2,#dc3545);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🚀 Advanced Options Strategies</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">🦅 Bull Call Spread</div>
+                                <p class="small text-secondary mb-1"><em>Moderately bullish, defined risk</em></p>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Buy ATM Call + Sell OTM Call (same expiry)</li>
+                                    <li>Max profit: difference between strikes − net debit</li>
+                                    <li>Max loss: limited to net premium paid</li>
+                                    <li>Use when expecting moderate upside, not sharp move</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">🦅 Iron Condor</div>
+                                <p class="small text-secondary mb-1"><em>Range-bound neutral strategy</em></p>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Sell OTM Call + Buy further OTM Call</li>
+                                    <li>Sell OTM Put + Buy further OTM Put</li>
+                                    <li>Profits when price stays within the range</li>
+                                    <li>Best used with IV Rank &gt; 50, weekly expiry</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">⚡ Straddle / Strangle</div>
+                                <p class="small text-secondary mb-1"><em>Volatility play (before big events)</em></p>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Straddle: Buy ATM Call + ATM Put (same strike)</li>
+                                    <li>Strangle: Buy OTM Call + OTM Put (different strikes)</li>
+                                    <li>Profit from large move in either direction</li>
+                                    <li>Enter before budget / RBI policy / earnings</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">🎯 ORB — Opening Range Breakout</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Mark the high and low of first 15-min candle</li>
+                                    <li>Buy CE if price breaks above ORB high with volume</li>
+                                    <li>Buy PE if price breaks below ORB low</li>
+                                    <li>Target: 1:2 R:R minimum; SL: opposite ORB level</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">📐 VWAP Strategy (Intraday)</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Long bias when price is above VWAP; short when below</li>
+                                    <li>Buy on pullback to VWAP + bounce confirmation</li>
+                                    <li>Combine with VWAP bands for dynamic S/R</li>
+                                    <li>Exit all intraday F&amp;O positions by 3:20 PM IST</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#6610f2;">🔢 OI Analysis</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Max Pain = strike with highest OI (price gravitates here)</li>
+                                    <li>High Call OI at strike = strong resistance zone</li>
+                                    <li>High Put OI at strike = strong support zone</li>
+                                    <li>OI buildup with price rise = bulls adding longs (bullish)</li>
+                                    <li>OI buildup with price fall = bears shorting (bearish)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RISK RULES -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#dc3545,#6610f2);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🛡️ F&amp;O Risk Management Rules</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(220,53,69,0.07);">
+                                <div class="fw-bold mb-2 text-danger">🚫 Hard Rules (Never Break)</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Never trade F&amp;O without a pre-defined stop loss</li>
+                                    <li>Max capital in F&amp;O: 20% of total portfolio</li>
+                                    <li>Never hold naked short options overnight</li>
+                                    <li>Exit all weekly options by Thursday 2 PM (theta risk)</li>
+                                    <li>Stop trading if daily loss exceeds ₹5,000 or 2% of capital</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(40,167,69,0.06);">
+                                <div class="fw-bold mb-2 text-success">✅ Best Practices</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Use a Trade Journal — note every entry, exit &amp; reason</li>
+                                    <li>Paper trade new strategies for minimum 30 sessions</li>
+                                    <li>Learn from top traders: mark support/resistance night before</li>
+                                    <li>Watch Nifty 50, Bank Nifty, India VIX daily pre-market</li>
+                                    <li>Review your trades every Sunday — win rate, avg R:R, mistakes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-danger px-4"
+                        data-bs-dismiss="modal">Understood — Trade with Discipline!</button></div>
             </div>
         </div>
     </div>
 
-    <!-- Crypto Modal -->
+    <!-- ══════════════════════════════════════════════════════
+         CRYPTO & FOREX — Advanced Strategy Modal
+    ══════════════════════════════════════════════════════ -->
     <div class="modal fade" id="cryptoModal" tabindex="-1" aria-labelledby="cryptoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-4" id="cryptoModalLabel">Crypto & Forex Trading Rules & Strategy</h1>
+            <div class="modal-content" style="background:var(--bs-body-bg);border:1px solid var(--bs-border-color);">
+                <div class="modal-header"
+                    style="background:linear-gradient(135deg,rgba(255,193,7,0.10),rgba(40,167,69,0.08));border-bottom:1px solid var(--bs-border-color);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div
+                            style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f7931a,#28a745);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="16" />
+                                <line x1="8" y1="12" x2="16" y2="12" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="cryptoModalLabel">₿ Crypto &amp; Forex — Advanced
+                                Rules &amp; Strategy</h5>
+                            <small class="text-secondary">24/7 markets — decentralized &amp; institutional
+                                frameworks</small>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4" style="min-height: 50vh;">
-                    <p class="text-secondary mb-4">Add your personal Crypto and Forex trading rules, logics, and
-                        strategies below.</p>
-                    <div class="p-3"
-                        style="background: var(--bs-tertiary-bg); border-radius: 12px; border: 1px dashed #ccc; min-height: 40vh; display:flex; align-items:center; justify-content:center;">
-                        <p class="text-muted text-center m-0">
-                            <em>[Add your personal Crypto rules here by editing the modal block in
-                                <code>index.html</code>]</em>
-                        </p>
+                <div class="modal-body p-4 p-md-5">
+
+                    <div class="p-3 rounded-3 mb-4"
+                        style="background:rgba(255,193,7,0.07);border-left:4px solid #f7931a;">
+                        <p class="small mb-0"><strong>⚠️ 24/7 Market Risk:</strong> Crypto markets never close. Extreme
+                            volatility (±20% in hours) is common. Use proper leverage control and never risk what you
+                            can't afford to lose. Forex is regulated; crypto is largely unregulated in India.</p>
                     </div>
+
+                    <!-- SECTION 1: CRYPTO STRATEGIES -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#f7931a,#ffc107);">
+                        </div>
+                        <h5 class="fw-bold mb-0">₿ Crypto Trading Strategies</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#f7931a;">🕯️ Wyckoff Method</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li><strong>Accumulation Phase:</strong> Price consolidates after downtrend —
+                                        institutions buy quietly</li>
+                                    <li><strong>Markup:</strong> Price breaks out — enter on Spring (shakeout) or first
+                                        pullback</li>
+                                    <li><strong>Distribution:</strong> Price consolidates at top after uptrend —
+                                        institutions selling</li>
+                                    <li><strong>Markdown:</strong> Price falls — short opportunities or sell all longs
+                                    </li>
+                                    <li>Look for volume anomalies to confirm Wyckoff phases</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#f7931a;">🔗 On-Chain Analysis</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li><strong>SOPR &gt; 1:</strong> Coins moving at profit — potential sell pressure
+                                    </li>
+                                    <li><strong>Exchange inflow spike:</strong> Whales depositing to sell — bearish
+                                        signal</li>
+                                    <li><strong>HODL Waves:</strong> Long-term holders accumulating = bullish base</li>
+                                    <li><strong>Fear &amp; Greed Index &lt; 20:</strong> Extreme fear = historical buy
+                                        zones (BTC)</li>
+                                    <li>Use Glassnode or CryptoQuant for on-chain metrics</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#f7931a;">📐 ICT Concepts (Inner Circle Trader)
+                                </div>
+                                <ul class="small text-secondary mb-0">
+                                    <li><strong>Order Blocks:</strong> Zones where institutions placed large orders —
+                                        act as S/R</li>
+                                    <li><strong>Fair Value Gaps (FVG):</strong> Imbalance zones that price returns to
+                                        fill</li>
+                                    <li><strong>Inducement:</strong> Liquidity sweep above highs before reversal</li>
+                                    <li><strong>Market Structure Shift (MSS):</strong> Change of character signal for
+                                        entries</li>
+                                    <li>Trade during NY or London session for highest liquidity</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:#f7931a;">🔄 Crypto DCA + Swing</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li><strong>DCA Strategy:</strong> Buy fixed dollar amount weekly regardless of
+                                        price</li>
+                                    <li>Buy more aggressively when Bitcoin dominance &gt; 55%</li>
+                                    <li>Altcoins rally when BTC.D drops — rotate profits into alts</li>
+                                    <li>Use weekly RSI &lt; 30 as aggressive DCA signal for BTC</li>
+                                    <li>Always keep 20% in stablecoins for opportunities</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: FOREX STRATEGIES -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#28a745,#00bedd);">
+                        </div>
+                        <h5 class="fw-bold mb-0">💱 Forex Trading Strategies</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#28a745;">📊 Price Action Trading</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Use pure candlestick patterns: pin bars, inside bars, engulfing</li>
+                                    <li>Trade only at key support / resistance / supply-demand zones</li>
+                                    <li>1H–4H for entries, Daily for direction bias</li>
+                                    <li>No indicator needed — price tells the story</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#28a745;">🕐 Session Trading</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li><strong>London Session:</strong> 1:30 PM – 5:00 PM IST (highest volatility)</li>
+                                    <li><strong>NY Session:</strong> 6:30 PM – 10:00 PM IST (major moves)</li>
+                                    <li><strong>London-NY Overlap:</strong> Best time for EUR/USD, GBP/USD</li>
+                                    <li>Avoid Asian session for most pairs (low liquidity)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-2" style="color:#28a745;">🌐 Fundamental Drivers</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Follow NFP, CPI, FOMC, RBA, ECB decisions</li>
+                                    <li>Interest rate differentials drive long-term trends</li>
+                                    <li>Risk-on → sell USD; Risk-off → buy USD &amp; JPY</li>
+                                    <li>Use economic calendar daily (Investing.com, ForexFactory)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: RISK MANAGEMENT -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#dc3545,#6610f2);">
+                        </div>
+                        <h5 class="fw-bold mb-0">🛡️ Crypto &amp; Forex Risk Management</h5>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(220,53,69,0.07);">
+                                <div class="fw-bold mb-2 text-danger">🚫 Leverage Rules</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Beginners: Max 2–3× leverage; Intermediate: Max 5–10×</li>
+                                    <li>Never use max leverage offered by exchange</li>
+                                    <li>Higher leverage = smaller position size (keep risk constant)</li>
+                                    <li>Use isolated margin, never cross margin for new trades</li>
+                                    <li>Liquidation price must be &gt;15% away from entry</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border" style="background:rgba(40,167,69,0.06);">
+                                <div class="fw-bold mb-2 text-success">💰 Capital Management</div>
+                                <ul class="small text-secondary mb-0">
+                                    <li>Never invest more than 5% of net worth in crypto</li>
+                                    <li>Keep BTC as 50%+ of crypto portfolio (anchor)</li>
+                                    <li>Take profits systematically on 50%, 100%, 200% gains</li>
+                                    <li>Use hardware wallet for long-term crypto holdings</li>
+                                    <li>Keep emergency fund separate — never trade it</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TOP PAIRS TABLE -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div
+                            style="width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,#ffc107,#f7931a);">
+                        </div>
+                        <h5 class="fw-bold mb-0">📋 Best Pairs &amp; Timeframes</h5>
+                    </div>
+                    <div class="table-responsive mb-2">
+                        <table class="table table-sm table-bordered small">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Market</th>
+                                    <th>Top Pairs</th>
+                                    <th>Best Timeframe</th>
+                                    <th>Strategy</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-secondary">
+                                <tr>
+                                    <td><strong>Crypto</strong></td>
+                                    <td>BTC/USDT, ETH/USDT, BNB/USDT</td>
+                                    <td>4H / Daily</td>
+                                    <td>Swing + On-chain</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Altcoins</strong></td>
+                                    <td>SOL, AVAX, LINK, MATIC</td>
+                                    <td>1H / 4H</td>
+                                    <td>Momentum after BTC breakout</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Major Forex</strong></td>
+                                    <td>EUR/USD, GBP/USD, USD/JPY</td>
+                                    <td>1H / 4H</td>
+                                    <td>Price Action + Sessions</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Commodities</strong></td>
+                                    <td>XAU/USD (Gold), WTI Oil</td>
+                                    <td>4H / Daily</td>
+                                    <td>Macro + Support/Resistance</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INR Pairs</strong></td>
+                                    <td>USD/INR, EUR/INR</td>
+                                    <td>Daily</td>
+                                    <td>RBI policy + trend following</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">Got
+                        It — Trade the 24/7 Markets!</button></div>
             </div>
         </div>
     </div>
 
     <!-- About Us Modal -->
+    <!-- About Us Modal -->
     <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="aboutModalLabel">About Us</h5>
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="background: var(--bs-body-bg); border: 1px solid var(--bs-border-color);">
+                <div class="modal-header border-bottom"
+                    style="background: linear-gradient(135deg, rgba(0,123,255,0.08), rgba(0,190,221,0.08));">
+                    <div class="d-flex align-items-center gap-3">
+                        <div
+                            style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#007bff,#00bedd);display:flex;align-items:center;justify-content:center;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="8" />
+                                <line x1="12" y1="12" x2="12" y2="16" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="aboutModalLabel">About Us</h5>
+                            <small class="text-secondary">Predictor &mdash; Your Unified Trading Ecosystem</small>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <h4 class="fw-bold mb-3">Welcome to <span class="text-primary">Predictor – Your Unified Trading
-                            Ecosystem</span></h4>
-                    <p class="text-secondary">Predictor is a modern, all-in-one trading platform designed to simplify
-                        the way traders and investors access market tools, insights, and opportunities. Our mission is
-                        to bring everything you need for smarter trading into one centralized and easy-to-use platform.
+                <div class="modal-body p-4 p-md-5">
+
+                    <!-- Hero Banner -->
+                    <div class="text-center mb-5 p-4 rounded-3"
+                        style="background: linear-gradient(135deg, rgba(0,123,255,0.06), rgba(0,190,221,0.06)); border: 1px solid rgba(0,123,255,0.15);">
+                        <h2 class="fw-bold mb-2"
+                            style="background:linear-gradient(90deg,#007bff,#00bedd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+                            Welcome to Predictor</h2>
+                        <p class="text-secondary mb-0 lead">India's smarter, unified trading intelligence platform —
+                            built by traders, for traders.</p>
+                    </div>
+
+                    <!-- Mission -->
+                    <h5 class="fw-bold mb-3" style="color:var(--bs-body-color);">🎯 Our Mission</h5>
+                    <p class="text-secondary mb-4">Predictor was built with a single mission: to eliminate the chaos of
+                        switching between dozens of financial websites every trading session. We bring market data,
+                        AI-powered predictions, real-time news, live charts, broker tools, and educational resources
+                        into one unified, lightning-fast dashboard — so you can focus entirely on what matters:
+                        <strong>making informed trading decisions</strong>.
                     </p>
 
-                    <h5 class="fw-bold mt-4">Our Vision</h5>
-                    <p class="text-secondary">We aim to empower traders of all levels by combining advanced technology,
-                        real-time data, and intelligent insights. Whether you are a beginner exploring the market or an
-                        experienced trader building strategies, Predictor helps you make more informed decisions.</p>
+                    <!-- Feature Grid -->
+                    <h5 class="fw-bold mb-3" style="color:var(--bs-body-color);">🛠️ What We Offer</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:var(--accent-color);">📈 Live TradingView Charts
+                                </div>
+                                <p class="small text-secondary mb-0">Full-featured candlestick charts with RSI, MACD,
+                                    Bollinger Bands, EMA, drawing tools, and real-time data for stocks, crypto &amp;
+                                    forex.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:var(--accent-color);">🤖 AI Neural Network
+                                    Predictions</div>
+                                <p class="small text-secondary mb-0">Deep learning models trained on historical data
+                                    predict price trends and generate short-term &amp; long-term trading signals.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:var(--accent-color);">📰 Real-Time Market News
+                                </div>
+                                <p class="small text-secondary mb-0">AI-curated financial news with sentiment analysis,
+                                    impact scoring, and buy/sell signals across stocks, crypto, metals &amp; economy.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:var(--accent-color);">🔗 Unified Broker Hub</div>
+                                <p class="small text-secondary mb-0">Direct links to Angel One, Zerodha, Groww, Upstox,
+                                    Dhan and more — so you can move from research to execution in seconds.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:var(--accent-color);">📊 Fundamental Analysis
+                                </div>
+                                <p class="small text-secondary mb-0">52-week highs/lows, P/E ratios, market cap, volume,
+                                    EMA signals, and company-specific news — all in one results page.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border h-100"
+                                style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                <div class="fw-bold mb-1" style="color:var(--accent-color);">📚 Education &amp; Strategy
+                                </div>
+                                <p class="small text-secondary mb-0">Built-in strategy modules for Stocks, F&amp;O, and
+                                    Crypto/Forex trading — with rules, risk management, and curated book
+                                    recommendations.</p>
+                            </div>
+                        </div>
+                    </div>
 
-                    <h5 class="fw-bold mt-4">What We Offer</h5>
-                    <p class="text-secondary">Predictor provides a seamless experience by integrating:</p>
-                    <ul class="text-secondary">
-                        <li>Advanced charting and technical analysis tools</li>
-                        <li>Real-time market data for stocks, crypto, and forex</li>
-                        <li>AI-powered predictions and insights</li>
-                        <li>Stock screening and fundamental analysis platforms</li>
-                        <li>Strategy building and backtesting tools</li>
-                    </ul>
-                    <p class="text-secondary">Our platform eliminates the need to switch between multiple websites,
-                        saving time and improving efficiency.</p>
+                    <!-- Stats Row -->
+                    <div class="row g-3 text-center mb-4">
+                        <div class="col-4">
+                            <div class="p-3 rounded-3"
+                                style="background:rgba(0,123,255,0.08);border:1px solid rgba(0,123,255,0.2);">
+                                <div class="fw-bold fs-4" style="color:var(--accent-color);">10+</div>
+                                <div class="small text-secondary">Integrated Platforms</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded-3"
+                                style="background:rgba(40,167,69,0.08);border:1px solid rgba(40,167,69,0.2);">
+                                <div class="fw-bold fs-4 text-success">5+</div>
+                                <div class="small text-secondary">Broker Integrations</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded-3"
+                                style="background:rgba(255,193,7,0.08);border:1px solid rgba(255,193,7,0.2);">
+                                <div class="fw-bold fs-4 text-warning">AI</div>
+                                <div class="small text-secondary">Powered Predictions</div>
+                            </div>
+                        </div>
+                    </div>
 
-                    <h5 class="fw-bold mt-4">Smart AI-Powered Insights</h5>
-                    <p class="text-secondary">At the core of Predictor is our intelligent system that analyzes market
-                        trends, price movements, and financial news to provide actionable insights. Our goal is to help
-                        users identify opportunities faster and manage risks more effectively.</p>
+                    <!-- Vision -->
+                    <h5 class="fw-bold mb-2" style="color:var(--bs-body-color);">🌟 Our Vision</h5>
+                    <p class="text-secondary mb-4">We envision a future where every retail trader in India has access to
+                        institutional-grade tools — without needing an expensive Bloomberg terminal. Whether you are a
+                        beginner just starting your journey or a seasoned professional, Predictor grows with you.</p>
 
-                    <h5 class="fw-bold mt-4">Transparency & Responsibility</h5>
-                    <p class="text-secondary">We believe in transparency and responsible trading. Predictor is built to
-                        support your research and decision-making process.</p>
-                    <p class="text-danger small fw-bold">Disclaimer: We do not provide financial advice. All insights
-                        and tools are for educational and informational purposes only. Trading in financial markets
-                        involves risk.</p>
+                    <!-- Disclaimer -->
+                    <div class="p-3 rounded-3 mt-2"
+                        style="background:rgba(220,53,69,0.06);border:1px solid rgba(220,53,69,0.2);">
+                        <p class="small text-danger fw-bold mb-1">⚠️ Important Disclaimer</p>
+                        <p class="small text-secondary mb-0">Predictor is an educational and informational platform. All
+                            predictions, signals, and insights provided are for research purposes only. We do not
+                            provide financial, investment, or trading advice. Trading in financial markets involves
+                            significant risk and may not be suitable for all investors. Past performance is not
+                            indicative of future results.</p>
+                    </div>
 
-                    <h5 class="fw-bold mt-4">Our Commitment</h5>
-                    <p class="text-secondary">We are committed to continuously improving our platform by adding new
-                        features, enhancing accuracy, and delivering a better user experience. Our focus is to build a
-                        reliable ecosystem that traders can trust every day.</p>
-                    <hr>
-                    <p class="text-center fw-bold text-primary">Predictor – Smarter Tools. Better Decisions.</p>
+                    <hr class="my-4">
+                    <p class="text-center fw-bold mb-0" style="color:var(--accent-color);font-size:1.05rem;">Predictor
+                        &mdash; Smarter Tools. Better Decisions. 🚀</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Got it!</button>
                 </div>
             </div>
         </div>
@@ -1387,110 +2468,394 @@
 
     <!-- Terms of Service Modal -->
     <div class="modal fade" id="tosModal" tabindex="-1" aria-labelledby="tosModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="tosModalLabel">Terms of Service</h5>
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="background: var(--bs-body-bg); border: 1px solid var(--bs-border-color);">
+                <div class="modal-header border-bottom"
+                    style="background: linear-gradient(135deg, rgba(108,117,125,0.08), rgba(0,0,0,0.04));">
+                    <div class="d-flex align-items-center gap-3">
+                        <div
+                            style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#495057,#343a40);display:flex;align-items:center;justify-content:center;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10 9 9 9 8 9" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="tosModalLabel">Terms of Service</h5>
+                            <small class="text-secondary">Last updated: April 2026 &mdash; Please read carefully</small>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <p class="text-secondary">Welcome to <strong>Predictor</strong>. By accessing or using our platform,
-                        you agree to comply with and be bound by the following Terms of Service. Please read them
-                        carefully.</p>
+                <div class="modal-body p-4 p-md-5">
 
-                    <h6 class="fw-bold mt-3">1. Acceptance of Terms</h6>
-                    <p class="text-secondary small">By using Predictor, you confirm that you have read, understood, and
-                        agreed to these Terms. If you do not agree, you must not use our services.</p>
+                    <div class="p-3 rounded-3 mb-4"
+                        style="background:rgba(0,123,255,0.06);border-left:4px solid var(--accent-color);">
+                        <p class="small text-secondary mb-0">Welcome to <strong>Predictor</strong>. By accessing or
+                            using our platform, you confirm that you have read, understood, and agree to be bound by
+                            these Terms of Service. If you do not agree with any part of these terms, please discontinue
+                            use of the platform immediately.</p>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">2. Description of Services</h6>
-                    <p class="text-secondary small">Predictor provides a unified trading ecosystem that includes access
-                        to market data, analysis tools, AI-based insights, and links to third-party trading platforms.
-                        All information provided is for <strong>educational and informational purposes only</strong>.
-                    </p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">1</span>
+                            Acceptance of Terms</h6>
+                        <p class="text-secondary small mb-0">By creating an account or using any feature of Predictor,
+                            you enter into a legally binding agreement with us. These Terms apply to all visitors,
+                            registered users, and anyone who accesses or uses our services. We reserve the right to
+                            update these terms at any time, with changes taking effect immediately upon posting.</p>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">3. No Financial Advice</h6>
-                    <p class="text-secondary small">Predictor does not provide financial, investment, or trading advice.
-                        All content, including AI-generated predictions, signals, and insights, should not be considered
-                        as professional advice. Users are solely responsible for their trading and investment decisions.
-                    </p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">2</span>
+                            Description of Services</h6>
+                        <p class="text-secondary small mb-2">Predictor provides a unified trading ecosystem that
+                            includes:</p>
+                        <ul class="text-secondary small mb-0">
+                            <li>AI-powered stock price prediction using deep learning models</li>
+                            <li>Real-time live charts powered by TradingView integration</li>
+                            <li>Market news aggregation with sentiment analysis</li>
+                            <li>Technical analysis tools including EMA, RSI, MACD</li>
+                            <li>Educational resources including trading strategies and books</li>
+                            <li>Links and redirections to third-party trading platforms and brokers</li>
+                        </ul>
+                        <p class="text-secondary small mt-2 mb-0">All information and tools provided are strictly for
+                            <strong>educational and informational purposes only</strong> and do not constitute financial
+                            advice.
+                        </p>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">4. User Responsibilities</h6>
-                    <p class="text-secondary small">By using our platform, you agree to: Use the website for lawful
-                        purposes only; Not misuse, copy, or distribute platform content; Not attempt to hack or disrupt
-                        the platform; Verify all information before making financial decisions.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-danger">3</span>
+                            No Financial Advice</h6>
+                        <div class="p-3 rounded-3"
+                            style="background:rgba(220,53,69,0.06);border:1px solid rgba(220,53,69,0.2);">
+                            <p class="text-secondary small mb-0"><strong class="text-danger">Important:</strong>
+                                Predictor does not provide financial, investment, or trading advice. All AI-generated
+                                predictions, signals, buy/sell indicators, and analysis are algorithmic outputs for
+                                educational purposes. You should always consult a SEBI-registered financial advisor
+                                before making investment decisions. Trading involves significant risk of loss and may
+                                not be suitable for all investors.</p>
+                        </div>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">5. Third-Party Services</h6>
-                    <p class="text-secondary small">Predictor may include links to third-party platforms. We do not
-                        control or take responsibility for third-party content, trading outcomes, or any losses caused
-                        by third-party services. Users access them at their own risk.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">4</span>
+                            User Account Responsibilities</h6>
+                        <p class="text-secondary small mb-2">By registering and using an account on Predictor, you agree
+                            to:</p>
+                        <ul class="text-secondary small mb-0">
+                            <li>Provide accurate and complete registration information</li>
+                            <li>Keep your account credentials confidential and secure</li>
+                            <li>Use the platform only for lawful purposes</li>
+                            <li>Not attempt to reverse-engineer, scrape, or copy platform content</li>
+                            <li>Not use automated bots or scripts to interact with the platform</li>
+                            <li>Verify all information independently before making any financial decision</li>
+                            <li>Report any unauthorized access to your account immediately</li>
+                        </ul>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">6. Affiliate Disclosure</h6>
-                    <p class="text-secondary small">Predictor may participate in affiliate programs. This means we may
-                        earn a commission when users click on links or sign up for third-party services. This does not
-                        affect the cost to the user.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">5</span>
+                            Third-Party Services &amp; Links</h6>
+                        <p class="text-secondary small mb-0">Predictor integrates with and links to third-party
+                            platforms including but not limited to TradingView, Angel One, Zerodha, Groww, Upstox, Dhan,
+                            Binance, MoneyControl, and others. We do not control these external services and are not
+                            responsible for their content, availability, pricing, or trading outcomes. Your use of
+                            third-party services is governed by their own terms and policies.</p>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">7. Intellectual Property</h6>
-                    <p class="text-secondary small">All content on Predictor is the property of Predictor. Unauthorized
-                        use, reproduction, or distribution is strictly prohibited.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">6</span>
+                            Affiliate Disclosure</h6>
+                        <p class="text-secondary small mb-0">Some links on Predictor may be affiliate links. We may earn
+                            a referral commission when you sign up for or use certain third-party services through our
+                            platform. This commission comes at no additional cost to you and does not influence our
+                            recommendations or content.</p>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">8. Limitation of Liability</h6>
-                    <p class="text-secondary small">Predictor is not liable for financial losses, errors in data, or
-                        service interruptions. Use of the platform is at your own risk.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">7</span>
+                            Intellectual Property</h6>
+                        <p class="text-secondary small mb-0">All original content on Predictor — including the platform
+                            design, source code, AI models, written content, logos, and branding — is the intellectual
+                            property of Predictor. Unauthorized copying, reproduction, modification, distribution, or
+                            commercial use without written permission is strictly prohibited.</p>
+                    </div>
 
-                    <hr>
-                    <p class="text-center small fw-bold">By using Predictor, you agree to these Terms of Service.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">8</span>
+                            Limitation of Liability</h6>
+                        <p class="text-secondary small mb-0">To the maximum extent permitted by applicable law,
+                            Predictor and its founders, developers, and affiliates shall not be liable for any direct,
+                            indirect, incidental, special, consequential, or punitive damages — including financial
+                            losses, loss of profits, or loss of data — arising from your use or inability to use the
+                            platform, reliance on any information provided, or any errors, interruptions, or service
+                            outages.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-primary">9</span>
+                            Termination</h6>
+                        <p class="text-secondary small mb-0">We reserve the right to suspend or terminate your account
+                            and access to Predictor at our sole discretion, without prior notice, if we believe you have
+                            violated these Terms or engaged in conduct that is harmful to the platform, other users, or
+                            third parties.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span
+                                class="badge bg-primary">10</span> Governing Law</h6>
+                        <p class="text-secondary small mb-0">These Terms of Service shall be governed by and construed
+                            in accordance with the laws of India. Any disputes arising out of or in connection with
+                            these terms shall be subject to the exclusive jurisdiction of the courts of India.</p>
+                    </div>
+
+                    <hr class="my-4">
+                    <div class="p-3 rounded-3 text-center" style="background:rgba(var(--bs-tertiary-bg-rgb),0.5);">
+                        <p class="small fw-bold mb-1" style="color:var(--bs-body-color);">✅ By using Predictor, you
+                            acknowledge that you have read and agreed to these Terms of Service.</p>
+                        <p class="small text-secondary mb-0">For questions, contact us via the platform. &mdash;
+                            Effective Date: April 2026</p>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">I Agree &amp;
+                        Close</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Privacy Policy Modal -->
+    <!-- Privacy & Cookies Policy Modal -->
     <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="privacyModalLabel">Privacy & Cookies Policy</h5>
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="background: var(--bs-body-bg); border: 1px solid var(--bs-border-color);">
+                <div class="modal-header border-bottom"
+                    style="background: linear-gradient(135deg, rgba(40,167,69,0.08), rgba(0,0,0,0.04));">
+                    <div class="d-flex align-items-center gap-3">
+                        <div
+                            style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#28a745,#20c997);display:flex;align-items:center;justify-content:center;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="privacyModalLabel">Privacy &amp; Cookies Policy
+                            </h5>
+                            <small class="text-secondary">Last updated: April 2026 &mdash; Your data, your
+                                rights</small>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <p class="text-secondary">Welcome to <strong>Predictor</strong>. Your privacy is important to us.
-                        This policy explains how we collect and use your data.</p>
+                <div class="modal-body p-4 p-md-5">
 
-                    <h6 class="fw-bold mt-3">1. Information We Collect</h6>
-                    <ul class="text-secondary small">
-                        <li><strong>Personal:</strong> Name and Email (if provided).</li>
-                        <li><strong>Non-Personal:</strong> Browser type, IP address, pages visited.</li>
-                    </ul>
+                    <div class="p-3 rounded-3 mb-4"
+                        style="background:rgba(40,167,69,0.06);border-left:4px solid #28a745;">
+                        <p class="small text-secondary mb-0">At <strong>Predictor</strong>, we take your privacy
+                            seriously. This Privacy &amp; Cookies Policy explains what information we collect, how we
+                            use it, how we protect it, and what your rights are. By using our platform, you agree to the
+                            practices described in this policy.</p>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">2. How We Use Your Information</h6>
-                    <p class="text-secondary small">To improve services, personalize user experience, and analyze
-                        website traffic.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-3"><span class="badge bg-success">1</span>
+                            Information We Collect</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-3 border h-100"
+                                    style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                    <p class="fw-bold small mb-2" style="color:#28a745;">📋 Personal Information</p>
+                                    <ul class="text-secondary small mb-0">
+                                        <li>Full name (provided at registration)</li>
+                                        <li>Email address (for account &amp; login)</li>
+                                        <li>Username (chosen by you)</li>
+                                        <li>Hashed password (never stored in plain text)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-3 border h-100"
+                                    style="background:rgba(var(--bs-tertiary-bg-rgb),0.4);">
+                                    <p class="fw-bold small mb-2" style="color:#007bff;">📊 Usage &amp; Technical Data
+                                    </p>
+                                    <ul class="text-secondary small mb-0">
+                                        <li>Browser type and version</li>
+                                        <li>IP address and approximate location</li>
+                                        <li>Pages visited and time spent</li>
+                                        <li>Stocks and assets searched</li>
+                                        <li>Session data and login timestamps</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">3. Cookies Policy</h6>
-                    <p class="text-secondary small">We use cookies to remember user preferences, track performance, and
-                        deliver relevant content. You can manage cookies in your browser settings.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-success">2</span>
+                            How We Use Your Information</h6>
+                        <ul class="text-secondary small mb-0">
+                            <li>To create and manage your user account securely</li>
+                            <li>To personalize your experience and remember your preferences (theme, language)</li>
+                            <li>To improve platform features based on aggregate usage analytics</li>
+                            <li>To provide search results, predictions, and analysis tailored to your queries</li>
+                            <li>To send important service-related notifications (not marketing spam)</li>
+                            <li>To detect, prevent, and address technical issues and security threats</li>
+                        </ul>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">4. Data Protection</h6>
-                    <p class="text-secondary small">We take reasonable steps to protect your data, but no online
-                        platform can guarantee complete security.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-3"><span class="badge bg-success">3</span>
+                            Cookies Policy</h6>
+                        <p class="text-secondary small mb-3">We use cookies to enhance your experience. A cookie is a
+                            small text file stored on your device. Here is what we use:</p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered small">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Cookie Type</th>
+                                        <th>Purpose</th>
+                                        <th>Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-secondary">
+                                    <tr>
+                                        <td><strong>Session Cookies</strong></td>
+                                        <td>Keeps you logged in during your session</td>
+                                        <td>Session end</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Preference Cookies</strong></td>
+                                        <td>Stores your theme (dark/light) preference</td>
+                                        <td>30 days</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Analytics Cookies</strong></td>
+                                        <td>Aggregate usage statistics (no personal ID)</td>
+                                        <td>90 days</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Third-Party Cookies</strong></td>
+                                        <td>TradingView, Google Fonts (CDN services)</td>
+                                        <td>Per provider</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-secondary small mb-0">You can disable cookies in your browser settings. Note that
+                            some features like staying logged in may not work without session cookies.</p>
+                    </div>
 
-                    <h6 class="fw-bold mt-3">5. Your Rights</h6>
-                    <p class="text-secondary small">You have the right to access, correct, or request deletion of your
-                        data.</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-success">4</span>
+                            Data Sharing &amp; Third Parties</h6>
+                        <p class="text-secondary small mb-2">We do <strong>not</strong> sell, rent, or trade your
+                            personal data. We may share anonymized, aggregate data with:</p>
+                        <ul class="text-secondary small mb-0">
+                            <li><strong>Service Providers:</strong> CDN and hosting services (to deliver the platform)
+                            </li>
+                            <li><strong>Analytics:</strong> Anonymized usage data to understand platform performance
+                            </li>
+                            <li><strong>Legal Requirements:</strong> If required by law, court order, or government
+                                authority</li>
+                        </ul>
+                    </div>
 
-                    <hr>
-                    <p class="text-center small fw-bold">By using Predictor, you agree to this Privacy & Cookies Policy.
-                    </p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-success">5</span>
+                            Data Security</h6>
+                        <p class="text-secondary small mb-0">We implement industry-standard security measures to protect
+                            your data, including: salted SHA-256 password hashing, server-side session management, and
+                            HTTPS encryption for data in transit. While we take every reasonable precaution, no online
+                            system can guarantee 100% security. We encourage you to use a strong, unique password for
+                            your account.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-success">6</span>
+                            Data Retention</h6>
+                        <p class="text-secondary small mb-0">Your account data is retained for as long as your account
+                            remains active. You may request deletion of your account and associated data at any time by
+                            contacting us through the platform. Anonymized usage data may be retained for analytics
+                            purposes.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-success">7</span>
+                            Your Rights</h6>
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <div class="p-2 rounded border text-center small">
+                                    <div>🔍</div>
+                                    <div class="fw-bold">Access</div>
+                                    <div class="text-secondary" style="font-size:0.7rem;">View your data</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="p-2 rounded border text-center small">
+                                    <div>✏️</div>
+                                    <div class="fw-bold">Correct</div>
+                                    <div class="text-secondary" style="font-size:0.7rem;">Fix inaccuracies</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="p-2 rounded border text-center small">
+                                    <div>🗑️</div>
+                                    <div class="fw-bold">Delete</div>
+                                    <div class="text-secondary" style="font-size:0.7rem;">Remove your data</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="p-2 rounded border text-center small">
+                                    <div>⛔</div>
+                                    <div class="fw-bold">Opt-Out</div>
+                                    <div class="text-secondary" style="font-size:0.7rem;">Analytics opt-out</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-success">8</span>
+                            Children's Privacy</h6>
+                        <p class="text-secondary small mb-0">Predictor is not intended for users under the age of 18. We
+                            do not knowingly collect personal data from minors. If you believe a minor has provided us
+                            with personal data, please contact us and we will delete it promptly.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2"><span class="badge bg-success">9</span>
+                            Policy Updates</h6>
+                        <p class="text-secondary small mb-0">We may update this Privacy &amp; Cookies Policy
+                            periodically. Material changes will be communicated through a notice on the platform.
+                            Continued use of Predictor after such changes constitutes your acceptance of the updated
+                            policy.</p>
+                    </div>
+
+                    <hr class="my-4">
+                    <div class="p-3 rounded-3 text-center" style="background:rgba(var(--bs-tertiary-bg-rgb),0.5);">
+                        <p class="small fw-bold mb-1" style="color:#28a745;">🛡️ Your privacy is important to us. We are
+                            committed to protecting it.</p>
+                        <p class="small text-secondary mb-0">By using Predictor, you agree to this Privacy &amp; Cookies
+                            Policy. &mdash; Effective Date: April 2026</p>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">I Understand &amp;
+                        Close</button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Careers Modal -->
+
+
     <!-- Trading Fees Payment Modal -->
     <div class="modal fade" id="tradingFeesModal" tabindex="-1" aria-labelledby="tradingFeesModalLabel"
         aria-hidden="true">
@@ -1811,19 +3176,16 @@
         // Initialize dropdown
         populateBrokerDropdown();
 
-        // Sync Logo & Brand to Header and Footer identically
+        // Sync Logo & Brand to Navbar, Hero, and Footer
         document.addEventListener('DOMContentLoaded', () => {
             const brandTemplate = document.getElementById('brand-template');
+            const logoContainers = document.querySelectorAll('.hero-logo-container');
             const footerBrandContainer = document.getElementById('footer-brand-container');
 
-            // Re-select the header ones dynamically in case DOM changes slightly
-            const headerBrandContainer = document.getElementById('header-brand-container');
-
-            if (headerBrandContainer && brandTemplate) {
-                headerBrandContainer.appendChild(brandTemplate.content.cloneNode(true));
-            }
-            if (footerBrandContainer && brandTemplate) {
-                footerBrandContainer.appendChild(brandTemplate.content.cloneNode(true));
+            if (brandTemplate) {
+                logoContainers.forEach(container => {
+                    container.appendChild(brandTemplate.content.cloneNode(true));
+                });
             }
         });
     </script>
@@ -2023,6 +3385,134 @@
             setInterval(() => fetchFinanceNews(currentNewsCategory), 300000); // refresh every 5 minutes
         });
     </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TRADINGVIEW ADVANCED CHART — Full-Featured Real-Time Widget
+    ═══════════════════════════════════════════════════════════════════ -->
+    <script>
+        (function () {
+            var chartContainer = document.getElementById('tv-advanced-chart-container');
+            if (!chartContainer) return; // only runs after a stock search
+
+            var TV_SYMBOL = "{{ tv_symbol if tv_symbol is defined else '' }}";
+            if (!TV_SYMBOL) return;
+
+            var currentInterval = 'D';
+            var tvLibLoaded = false;
+
+            function isDark() {
+                var attr = document.documentElement.getAttribute('data-bs-theme');
+                return attr === 'dark' || (attr !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            }
+
+            function hideLoader() {
+                var loader = document.getElementById('tv-chart-loading');
+                if (loader) loader.classList.add('hidden');
+            }
+
+            function buildWidget(sym, interval) {
+                /* Clear any previous widget */
+                chartContainer.innerHTML = '';
+
+                /* Show loading overlay */
+                var loader = document.getElementById('tv-chart-loading');
+                if (loader) loader.classList.remove('hidden');
+
+                var theme = isDark() ? 'dark' : 'light';
+
+                /* Full TradingView widget configuration */
+                var widgetConfig = {
+                    "autosize": true,
+                    "symbol": sym,
+                    "interval": interval,
+                    "timezone": "Asia/Kolkata",
+                    "theme": theme,
+                    "style": "1",
+                    "locale": "in",
+                    "toolbar_bg": isDark() ? "#131722" : "#f1f3f6",
+                    "enable_publishing": false,
+                    "hide_top_toolbar": false,
+                    "hide_legend": false,
+                    "save_image": true,
+                    "withdateranges": true,
+                    "allow_symbol_change": true,
+                    "details": true,
+                    "hotlist": true,
+                    "calendar": true,
+                    "studies": [
+                        "STD;MACD",
+                        "STD;RSI",
+                        "STD;Bollinger_Bands",
+                        "STD;EMA"
+                    ],
+                    "container_id": "tv-advanced-chart-container"
+                };
+
+                function createWidget() {
+                    new TradingView.widget(widgetConfig);
+                    setTimeout(hideLoader, 2800);
+                }
+
+                if (typeof TradingView !== 'undefined') {
+                    createWidget();
+                } else if (!tvLibLoaded) {
+                    tvLibLoaded = true;
+                    var s = document.createElement('script');
+                    s.type = 'text/javascript';
+                    s.async = true;
+                    s.src = 'https://s3.tradingview.com/tv.js';
+                    s.onload = function () { createWidget(); };
+                    s.onerror = function () {
+                        hideLoader();
+                        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--bs-secondary-color);font-size:0.95rem;flex-direction:column;gap:12px;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Chart could not be loaded. Please check your internet connection.</span><a href="https://in.tradingview.com/chart/?symbol=' + encodeURIComponent(sym) + '" target="_blank" class="tv-open-link" style="margin-top:8px;">Open on TradingView ↗</a></div>';
+                    };
+                    document.head.appendChild(s);
+                }
+            }
+
+            /* Initial chart render */
+            buildWidget(TV_SYMBOL, currentInterval);
+
+            /* Auto-scroll to chart section smoothly */
+            window.addEventListener('DOMContentLoaded', function () {
+                setTimeout(function () {
+                    var sec = document.querySelector('.tv-chart-section');
+                    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 700);
+            });
+            /* Fallback scroll if DOMContentLoaded already fired */
+            (function () {
+                if (document.readyState !== 'loading') {
+                    setTimeout(function () {
+                        var sec = document.querySelector('.tv-chart-section');
+                        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 700);
+                }
+            })();
+
+            /* Timeframe tab click handler */
+            var tabContainer = document.getElementById('tv-tf-tabs');
+            if (tabContainer) {
+                tabContainer.addEventListener('click', function (e) {
+                    var btn = e.target.closest('.tv-tf-btn');
+                    if (!btn) return;
+                    tabContainer.querySelectorAll('.tv-tf-btn').forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    currentInterval = btn.getAttribute('data-interval');
+                    buildWidget(TV_SYMBOL, currentInterval);
+                });
+            }
+
+            /* Re-render chart when theme toggle changes */
+            var themeToggleBtn = document.getElementById('theme-btn');
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', function () {
+                    setTimeout(function () { buildWidget(TV_SYMBOL, currentInterval); }, 200);
+                });
+            }
+        })();
+    </script>
+
 </body>
 
 </html>

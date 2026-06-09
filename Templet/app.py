@@ -146,6 +146,10 @@ if os.path.exists(model_path):
 else:
     print(f"Warning: Model file not found at {model_path}. Please train the model first.")
 
+@app.route('/careers')
+def careers():
+    return render_template('careers.html')
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -343,6 +347,65 @@ def index():
         csv_file_path = os.path.join(STATIC_DIR, f'{stock}_dataset.csv')
         df.to_csv(csv_file_path)
 
+        # ---- TradingView Symbol Mapper ----
+        def get_tv_symbol(yf_symbol):
+            """Convert yfinance symbol to TradingView exchange:ticker format."""
+            sym = yf_symbol.upper().strip()
+
+            # Crypto pairs  e.g. BTC-USD, ETH-USD, BNB-USDT
+            crypto_map = {
+                'BTC-USD': 'BINANCE:BTCUSDT', 'ETH-USD': 'BINANCE:ETHUSDT',
+                'BNB-USD': 'BINANCE:BNBUSDT', 'SOL-USD': 'BINANCE:SOLUSDT',
+                'XRP-USD': 'BINANCE:XRPUSDT', 'ADA-USD': 'BINANCE:ADAUSDT',
+                'DOGE-USD': 'BINANCE:DOGEUSDT', 'AVAX-USD': 'BINANCE:AVAXUSDT',
+                'DOT-USD': 'BINANCE:DOTUSDT', 'MATIC-USD': 'BINANCE:MATICUSDT',
+                'LINK-USD': 'BINANCE:LINKUSDT', 'LTC-USD': 'BINANCE:LTCUSDT',
+            }
+            if sym in crypto_map:
+                return crypto_map[sym]
+            # Generic crypto: TOKEN-USD → BINANCE:TOKENUSDT
+            if '-USD' in sym or '-USDT' in sym:
+                base = sym.replace('-USD', '').replace('-USDT', '')
+                return f'BINANCE:{base}USDT'
+            if '-INR' in sym:
+                base = sym.replace('-INR', '')
+                return f'BINANCE:{base}INR'
+
+            # Forex  e.g. EURUSD=X, GBPUSD=X
+            if sym.endswith('=X'):
+                pair = sym.replace('=X', '')
+                return f'FX:{pair}'
+
+            # Commodities / Indices
+            commodity_map = {
+                'GC=F': 'TVC:GOLD', 'SI=F': 'TVC:SILVER', 'CL=F': 'NYMEX:CL1!',
+                '^NSEI': 'NSE:NIFTY', '^BSESN': 'BSE:SENSEX',
+                '^DJI': 'DJ:DJI', '^GSPC': 'SP:SPX', '^IXIC': 'NASDAQ:NDX',
+                '^NSEBANK': 'NSE:BANKNIFTY',
+            }
+            if sym in commodity_map:
+                return commodity_map[sym]
+
+            # Indian NSE stocks  e.g. RELIANCE.NS
+            if sym.endswith('.NS'):
+                ticker = sym[:-3]
+                return f'NSE:{ticker}'
+            # Indian BSE stocks  e.g. RELIANCE.BO
+            if sym.endswith('.BO'):
+                ticker = sym[:-3]
+                return f'BSE:{ticker}'
+
+            # US / International stocks — try to guess exchange
+            us_nasdaq = {'AAPL','MSFT','GOOGL','GOOG','AMZN','META','NVDA','TSLA',
+                         'NFLX','INTC','AMD','QCOM','ADBE','PYPL','CSCO','AVGO',
+                         'TXN','MU','AMAT','LRCX','KLAC','MRVL','SNPS','CDNS'}
+            if sym in us_nasdaq:
+                return f'NASDAQ:{sym}'
+            # Default: try NYSE prefix for remaining US tickers
+            return f'NYSE:{sym}'
+
+        tv_symbol = get_tv_symbol(stock)
+
         # Format large numbers for UI
         def format_large_number(num):
             if not num or num == "N/A": return "N/A"
@@ -369,11 +432,12 @@ def index():
                                long_term_view=long_term_view,
                                long_term_color=long_term_color,
                                ticker_news=ticker_news,
-                               plot_path_ema_20_50='ema_20_50.png', 
-                               plot_path_ema_100_200='ema_100_200.png', 
-                               plot_path_prediction='stock_prediction.png', 
+                               plot_path_ema_20_50='ema_20_50.png',
+                               plot_path_ema_100_200='ema_100_200.png',
+                               plot_path_prediction='stock_prediction.png',
                                data_desc=data_desc.to_html(classes='table table-bordered text-center'),
-                               dataset_link=f'{stock}_dataset.csv')
+                               dataset_link=f'{stock}_dataset.csv',
+                               tv_symbol=tv_symbol)
     return render_template('index.html')
 
 @app.route('/download/<filename>')

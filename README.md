@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,50:16213e,100:0f3460&height=200&section=header&text=Predictor%20&fontSize=38&fontColor=4fc3f7&fontAlignY=38&desc=AI-Powered%20Stock%20Prediction%20%7C%20platform&descAlignY=58&descColor=90caf9&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,50:16213e,100:0f3460&height=200&section=header&text=Predictor%20&fontSize=38&fontColor=4fc3f7&fontAlignY=38&desc=AI-Powered%20Stock%20Prediction%20platform&descAlignY=58&descColor=90caf9&animation=fadeIn" width="100%"/>
     
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com/)

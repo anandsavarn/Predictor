@@ -1,5 +1,3 @@
-# 📈 Predictor - AI-Powered Stock Price Prediction Platform
-
 <div align="center">
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,50:16213e,100:0f3460&height=200&section=header&text=Predictor%20&fontSize=38&fontColor=4fc3f7&fontAlignY=38&desc=AI-Powered%20Stock%20Prediction%20%7C%20platform&descAlignY=58&descColor=90caf9&animation=fadeIn" width="100%"/>
     

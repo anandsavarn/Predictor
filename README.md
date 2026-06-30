@@ -762,5 +762,7 @@ If this project helped you, please consider:
 [![Built with Python](https://img.shields.io/badge/Built%20with-Python-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![Powered by TensorFlow](https://img.shields.io/badge/Powered%20by-TensorFlow-orange?style=flat-square&logo=tensorflow)](https://www.tensorflow.org/)
 [![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-green?style=flat-square&logo=render)](https://render.com/)
+<img src="https://capsule-render.vercel.app/api?type=waving&color=400:00ff88,800:003300,800:0a0a0a&height=120&section=footer" width="100%"/>
+
 
 </div>

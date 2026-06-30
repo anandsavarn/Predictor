@@ -29,7 +29,11 @@
 - 🔐 **Production-Ready**: Deployed on Render with WSGI configuration
 
 ---
+<div align="center">
+<img src="assets/ev-dashboard-preview.png" alt="Electric Vehicle Population Dashboard - Excel" width="95%"/>
 
+> *Interactive Excel dashboard showing EV growth trends, geographic distribution, top manufacturers, BEV vs PHEV breakdown, and sales analysis — all built with Pivot Tables, Slicers, and Dynamic Charts.*
+</div>
 ## 🎯 Features
 
 ### 📈 Core Functionality

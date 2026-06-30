@@ -1,7 +1,7 @@
 # 📈 Predictor - AI-Powered Stock Price Prediction Platform
 
 <div align="center">
-
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,50:16213e,100:0f3460&height=200&section=header&text=Predictor%20-%20AI-Powered%20Stock%20Price%20Prediction%20Platform&fontSize=38&fontColor=4fc3f7&fontAlignY=38&desc=Real-Time%20Weather%20Intelligence%20%7C%20Power%20BI&descAlignY=58&descColor=90caf9&animation=fadeIn" width="100%"/>
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.0+-orange.svg?style=for-the-badge&logo=tensorflow)](https://www.tensorflow.org/)

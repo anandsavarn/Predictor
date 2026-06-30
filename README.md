@@ -1,4 +1,4 @@
-# 📈 Predictor.com - AI-Powered Stock Price Prediction Platform
+# 📈 Predictor - AI-Powered Stock Price Prediction Platform
 
 <div align="center">
 

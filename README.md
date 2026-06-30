@@ -36,7 +36,7 @@
 <img src="assets/Footer.png" alt="Electric Vehicle Population Dashboard - Excel" width="95%"/>
 <img src="assets/News.png" alt="Electric Vehicle Population Dashboard - Excel" width="95%"/>
 <img src="assets/Login.png" alt="Electric Vehicle Population Dashboard - Excel" width="95%"/>
-> *Interactive Excel dashboard showing EV growth trends, geographic distribution, top manufacturers, BEV vs PHEV breakdown, and sales analysis — all built with Pivot Tables, Slicers, and Dynamic Charts.*
+> *Interactive Excel dashboard*
 </div>
 ## 🎯 Features
 

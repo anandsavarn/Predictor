@@ -12,7 +12,7 @@
 *Intelligent stock price prediction powered by Deep Learning • Real-time Market Analysis • Interactive Visualizations*
 
 </div>
-
+ 
 ---
 
 ## 🚀 Overview
